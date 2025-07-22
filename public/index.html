@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seattle Greenspace Explorer</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <!-- D3 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Google Maps JavaScript API loaded dynamically -->
+    <script>
+      fetch('/api/google-maps-key')
+        .then(res => res.json())
+        .then(data => {
+          if (data.key) {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places`;
+            document.head.appendChild(script);
+          } else {
+            console.error('Google Maps API key not found.');
+          }
+        });
+    </script>
+</head>
+
+<body>
+    <!-- Intro Screen -->
+    <div id="intro-screen" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #e8f5e9;">
+        <h1 style="font-size: 3em; margin-bottom: 32px; color: #388e3c;">Seattle Greenspaces Explorer</h1>
+        <div style="display: flex; gap: 32px; margin-bottom: 40px;">
+            <button id="btn-search" style="padding: 16px 32px; font-size: 1.2em; background: #66bb6a; color: white; border: none; border-radius: 8px; cursor: pointer;">Search Park</button>
+            <button id="btn-map" style="padding: 16px 32px; font-size: 1.2em; background: #388e3c; color: white; border: none; border-radius: 8px; cursor: pointer;">View Map</button>
+        </div>
+        <div style="display: flex; gap: 48px; justify-content: center; align-items: center; margin-top: 24px;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <span style="font-size: 2em; color: #388e3c;">&#127795;</span>
+                <span style="margin-top: 8px; font-size: 1.1em;">400+ Parks</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <span style="font-size: 2em; color: #388e3c;">&#127807;</span>
+                <span style="margin-top: 8px; font-size: 1.1em;">Natural Beauty</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <span style="font-size: 2em; color: #388e3c;">&#128694;&#8205;&#9792;&#65039;</span>
+                <span style="margin-top: 8px; font-size: 1.1em;">Easy Access</span>
+            </div>
+        </div>
+    </div>
+    <!-- Centered Search Section -->
+    <section id="search-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 700px;">
+    <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">
+        Find Your Favorite Green Space
+    </h2>
+    <p style="font-size: 0.95em; color: #555; margin-bottom: 24px; text-align: center;">
+        Search by name to learn more about available features
+    </p>
+    <div id="searchbar-container" style="position: relative; width: 100%;">
+        <!-- Search emoji (positioned absolutely inside input) -->
+        <span
+        style="position: absolute; left: 12px; top: 15%;  font-size: 1.2em;"
+        >🔍</span>
+
+        <!-- Search input -->
+        <input
+        type="text"
+        id="park-searchbar"
+        placeholder="Search for a park..."
+        style="width: 100%; max-width: 100vw; box-sizing: border-box; padding: 12px 16px 12px 40px; font-size: 1em; border-radius: 8px; border: 2px solid #999;"
+        />
+
+        <span id="searchbar-error" style="color: red; margin-left: 12px;"></span>
+
+        <!-- Suggestion dropdown -->
+        <ul
+        id="searchbar-suggestions"
+        style="position: absolute; left: 0; top: 48px; width: 100%; background: #fff;
+                border: 1px solid #ccc; border-radius: 0 0 8px 8px; z-index: 10;
+                list-style: none; margin: 0; padding: 0; display: none;"
+        ></ul>
+    </div>
+    </section>
+
+
+
+    <div id="search-dashboard" style="border:1px solid #ccc; border-radius:8px; padding:24px; background:#fafafa; width: 350px; min-height: 400px; display:none; margin: 32px auto 24px auto;"></div>
+    <!-- Interactive Map Section -->
+    <section id="map-section" style="background: #f5f5f7; padding: 48px 0; margin-top: 32px;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px;">
+            <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">Interactive map</h2>
+            <p style="font-size: 1em; color: #666; margin-bottom: 32px; text-align: center;">Explore Seattle's green spaces on our map</p>
+            <div style="margin-bottom: 8px; text-align: left; font-size: 1.08em; color: #000000; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                <img src="filter.png" alt="Filter icon" style="height: 1.2em; width: auto; vertical-align: middle; margin-right: 4px;" />
+                Filter by type:
+            </div>
+            <div id="filters" style="margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 12px;">
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Adult Fitness Equipment" style="margin-right: 8px; accent-color: #388e3c;" /> Adult Fitness Equipment 🏋️
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Art in the Park" style="margin-right: 8px; accent-color: #388e3c;" /> Art in the Park 🎨
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Baseball/Softball Fields" style="margin-right: 8px; accent-color: #388e3c;" /> Baseball/Softball Fields ⚾
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Basketball Courts" style="margin-right: 8px; accent-color: #388e3c;" /> Basketball Courts 🏀
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Dog Off Leash Areas" style="margin-right: 8px; accent-color: #388e3c;" /> Dog Off Leash Areas 🐕
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Drinking fountains" style="margin-right: 8px; accent-color: #388e3c;" /> Drinking fountains 💧
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Fire Pits" style="margin-right: 8px; accent-color: #388e3c;" /> Fire Pits 🔥
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Fishing piers" style="margin-right: 8px; accent-color: #388e3c;" /> Fishing piers 🎣
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Football Fields" style="margin-right: 8px; accent-color: #388e3c;" /> Football Fields 🏈
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Gardens" style="margin-right: 8px; accent-color: #388e3c;" /> Gardens 🌸
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Grills" style="margin-right: 8px; accent-color: #388e3c;" /> Grills 🍔
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Hand Carry Boat Launches" style="margin-right: 8px; accent-color: #388e3c;" /> Hand Carry Boat Launches 🛶
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Motorized Boat Launches" style="margin-right: 8px; accent-color: #388e3c;" /> Motorized Boat Launches 🚤
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Picnic Sites" style="margin-right: 8px; accent-color: #388e3c;" /> Picnic Sites 🧺
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Play Area" style="margin-right: 8px; accent-color: #388e3c;" /> Play Area 🛝
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Restrooms" style="margin-right: 8px; accent-color: #388e3c;" /> Restrooms 🚻
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Skate Park" style="margin-right: 8px; accent-color: #388e3c;" /> Skate Park 🛹
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Soccer Fields" style="margin-right: 8px; accent-color: #388e3c;" /> Soccer Fields ⚽
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Spray Parks" style="margin-right: 8px; accent-color: #388e3c;" /> Spray Parks 💦
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Swimming Beaches" style="margin-right: 8px; accent-color: #388e3c;" /> Swimming Beaches 🏖️
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Tennis Courts" style="margin-right: 8px; accent-color: #388e3c;" /> Tennis Courts 🎾
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Track Fields" style="margin-right: 8px; accent-color: #388e3c;" /> Track Fields 🏃‍♂️
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Trails" style="margin-right: 8px; accent-color: #388e3c;" /> Trails 🚶‍♂️
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Views" style="margin-right: 8px; accent-color: #388e3c;" /> Views 🌄
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Volleyball Courts" style="margin-right: 8px; accent-color: #388e3c;" /> Volleyball Courts 🏐
+                </label>
+                <label style="display: flex; align-items: center; background: #e8f5e9; border-radius: 20px; padding: 6px 18px; font-size: 1em; color: #388e3c; cursor: pointer; box-shadow: 0 1px 4px rgba(56,142,60,0.06);">
+                    <input type="checkbox" id="filter-Wading Pools" style="margin-right: 8px; accent-color: #388e3c;" /> Wading Pools 🩱
+                </label>
+            </div>
+            <div style="display: flex; gap: 32px; align-items: flex-start;">
+                <div id="map" style="flex: 2 1 0; min-width: 0; height: 600px; border-radius: 12px; box-shadow: 0 2px 16px rgba(56,142,60,0.08);"></div>
+                <div style="flex: 1 1 350px; min-width: 320px; max-width: 400px; min-height: 400px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
+                    <div id="dashboard-empty-message" style="color: #888; font-size: 1.1em; margin-top: 32px; text-align: center; display: block;">No park currently selected</div>
+                    <div id="park-dashboard" style="border:1px solid #ccc; border-radius:8px; padding:24px; background:#fafafa; width: 100%; min-height: 400px; margin-left: 0; box-sizing: border-box; display: none; flex-direction: column; align-items: center; justify-content: flex-start;">
+                        <h2 id="dashboard-park-name" style="width: 100%; text-align: center;"></h2>
+                        <div id="dashboard-features" style="width: 100%;"></div>
+                        <div id="dashboard-charts" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="main.js"></script>
+</body>
+</html>

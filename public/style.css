@@ -1,0 +1,22 @@
+#map {
+    width: 600px;
+    height: 800px;
+}
+
+.main-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 32px;
+}
+
+#park-dashboard {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 24px;
+    background: #fafafa;
+    width: 350px;
+    min-height: 400px;
+    display: none;
+}
+  
