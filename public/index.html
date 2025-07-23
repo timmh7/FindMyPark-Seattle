@@ -51,38 +51,23 @@
             </div>
         </div>
     </div>
-    <!-- Centered Search Section -->
-    <section id="search-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 700px;">
+
+
+    <!-- AI Park Guide Section -->
+    <section id="ai-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 700px;">
     <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">
-        Find Your Favorite Green Space
+        Ask our Park Guide
     </h2>
     <p style="font-size: 0.95em; color: #555; margin-bottom: 24px; text-align: center;">
-        Search by name to learn more about available features
+        Describe what you're looking for and let our AI guide help you find the perfect Seattle park
     </p>
-    <div id="searchbar-container" style="position: relative; width: 100%;">
-        <!-- Search emoji (positioned absolutely inside input) -->
-        <span
-        style="position: absolute; left: 12px; top: 15%;  font-size: 1.2em;"
-        >🔍</span>
-
-        <!-- Search input -->
-        <input
-        type="text"
-        id="park-searchbar"
-        placeholder="Search for a park..."
-        style="width: 100%; max-width: 100vw; box-sizing: border-box; padding: 12px 16px 12px 40px; font-size: 1em; border-radius: 8px; border: 2px solid #999;"
-        />
-
-        <span id="searchbar-error" style="color: red; margin-left: 12px;"></span>
-
-        <!-- Suggestion dropdown -->
-        <ul
-        id="searchbar-suggestions"
-        style="position: absolute; left: 0; top: 48px; width: 100%; background: #fff;
-                border: 1px solid #ccc; border-radius: 0 0 8px 8px; z-index: 10;
-                list-style: none; margin: 0; padding: 0; display: none;"
-        ></ul>
+    <div style="display: flex; gap: 12px; align-items: flex-start; justify-content: center;">
+        <div style="flex: 1; position: relative;">
+            <input type="text" id="ai-guide-input" placeholder="e.g., I want a park with hiking trails and nice views..." style="width: 100%; padding: 14px 16px; font-size: 1em; border-radius: 10px; border: 2px solid #999; background: #fff; box-sizing: border-box;" />
+        </div>
+        <button id="ai-guide-btn" style="padding: 14px 28px; font-size: 1em; background: #388e3c; color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 6px rgba(56,142,60,0.10);">Ask Guide</button>
     </div>
+    <div id="ai-guide-response" style="margin-top: 18px; font-size: 1.05em; color: #222; text-align: left;"></div>
     </section>
 
 
@@ -91,8 +76,36 @@
     <!-- Interactive Map Section -->
     <section id="map-section" style="background: #f5f5f7; padding: 48px 0; margin-top: 32px;">
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px;">
-            <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">Interactive map</h2>
-            <p style="font-size: 1em; color: #666; margin-bottom: 32px; text-align: center;">Explore Seattle's green spaces on our map</p>
+            <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">Find & Explore Parks</h2>
+            <p style="font-size: 1em; color: #666; margin-bottom: 32px; text-align: center;">
+                Search to learn more about your favorite park, explore outdoor spaces on our interactive map
+            </p>
+
+            <div id="searchbar-container" style="position: relative; width: 100%;">
+                <!-- Search emoji (positioned absolutely inside input) -->
+                <span
+                style="position: absolute; left: 12px; top: 15%;  font-size: 1.2em;"
+                >🔍</span>
+
+                <!-- Search input -->
+                <input
+                type="text"
+                id="park-searchbar"
+                placeholder="Want to know more about a specific park? Search for a park here..."
+                style="width: 100%; max-width: 100vw; box-sizing: border-box; padding: 12px 16px 12px 40px; font-size: 1em; border-radius: 8px; border: 2px solid #999;"
+                />
+
+                <span id="searchbar-error" style="color: red; margin-left: 12px;"></span>
+
+                <!-- Suggestion dropdown -->
+                <ul
+                id="searchbar-suggestions"
+                style="position: absolute; left: 0; top: 48px; width: 100%; background: #fff;
+                        border: 1px solid #ccc; border-radius: 0 0 8px 8px; z-index: 10;
+                        list-style: none; margin: 0; padding: 0; display: none;"
+                ></ul>
+            </div>
+
             <div style="margin-bottom: 8px; text-align: left; font-size: 1.08em; color: #000000; font-weight: 500; display: flex; align-items: center; gap: 8px;">
                 <img src="filter.png" alt="Filter icon" style="height: 1.2em; width: auto; vertical-align: middle; margin-right: 4px;" />
                 Filter by type:
@@ -181,10 +194,22 @@
                 <div id="map" style="flex: 2 1 0; min-width: 0; height: 600px; border-radius: 12px; box-shadow: 0 2px 16px rgba(56,142,60,0.08);"></div>
                 <div style="flex: 1 1 350px; min-width: 320px; max-width: 400px; min-height: 400px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
                     <div id="dashboard-empty-message" style="color: #888; font-size: 1.1em; margin-top: 32px; text-align: center; display: block;">No park currently selected</div>
-                    <div id="park-dashboard" style="border:1px solid #ccc; border-radius:8px; padding:24px; background:#fafafa; width: 100%; min-height: 400px; margin-left: 0; box-sizing: border-box; display: none; flex-direction: column; align-items: center; justify-content: flex-start;">
-                        <h2 id="dashboard-park-name" style="width: 100%; text-align: center;"></h2>
-                        <div id="dashboard-features" style="width: 100%;"></div>
-                        <div id="dashboard-charts" style="width: 100%;"></div>
+                    <div id="park-dashboard" class="park-dashboard">
+
+                    <div class="dashboard-header">
+                    <h2 id="dashboard-park-name" class="dashboard-park-name"></h2>
+                    <div class="dashboard-rating-wrapper">
+                        <div class="dashboard-rating">
+                        <span class="star-emoji">⭐</span>
+                        <span id="dashboard-park-rating" class="dashboard-park-rating">4.6</span>
+                        </div>
+                        <span id="dashboard-park-reviews" class="dashboard-park-reviews">123 reviews</span>
+                    </div>
+                    </div>
+                    
+                        <div id="dashboard-features" class="dashboard-features"></div>
+                        <img id="dashboard-park-image" class="dashboard-park-image" src="" alt="Park image" style="display:none;" />
+                        <button id="dashboard-directions" class="dashboard-directions">Directions</button>
                     </div>
                 </div>
             </div>

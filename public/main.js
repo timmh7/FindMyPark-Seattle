@@ -1,3 +1,37 @@
+// Park Guide Assistant: Frontend logic to send user query to backend
+document.addEventListener('DOMContentLoaded', function() {
+  const aiInput = document.getElementById('ai-guide-input');
+  const aiBtn = document.getElementById('ai-guide-btn');
+  const aiResponse = document.getElementById('ai-guide-response');
+  if (aiBtn && aiInput && aiResponse) {
+    aiBtn.addEventListener('click', async function() {
+      const query = aiInput.value.trim(); // Grab user's query
+      if (!query) {  // No input
+        aiResponse.textContent = 'Please enter what you are looking for.';
+        return;
+      }
+      aiResponse.textContent = 'Thinking...';
+
+      try {
+        // Send user's query to backend as a POST request
+        const res = await fetch('/park-assistant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+        if (!res.ok) throw new Error('Server error');
+        const data = await res.json();
+        // Show server's response, else no answer
+        aiResponse.textContent = data.response || 'No answer found.';
+      } catch (err) { // Server error, show error message
+        aiResponse.textContent = 'Sorry, something went wrong.';
+      }
+    });
+  }
+});
+
+
+
 // Create leaflet map centered on Seattle
 const map = L.map('map').setView([47.6062, -122.3321], 12);
 
@@ -175,22 +209,59 @@ function showParkDashboard(park) {
     dashboard.style.display = 'block';
     document.getElementById('dashboard-empty-message').style.display = 'none';
     document.getElementById('dashboard-park-name').textContent = park.name;
-    // Only list available features
+
+    // Features as green boxes with emojis
+    const featureEmojis = {
+        'Adult Fitness Equipment': '🏋️',
+        'Art in the Park': '🎨',
+        'Baseball/Softball Fields': '⚾',
+        'Basketball Courts': '🏀',
+        'Dog Off Leash Areas': '🐕',
+        'Drinking fountains': '💧',
+        'Fire Pits': '🔥',
+        'Fishing piers': '🎣',
+        'Football Fields': '🏈',
+        'Gardens': '🌸',
+        'Grills': '🍔',
+        'Hand Carry Boat Launches': '🛶',
+        'Motorized Boat Launches': '🚤',
+        'Picnic Sites': '🧺',
+        'Play Area': '🛝',
+        'Restrooms': '🚻',
+        'Skate Park': '🛹',
+        'Soccer Fields': '⚽',
+        'Spray Parks': '💦',
+        'Swimming Beaches': '🏖️',
+        'Tennis Courts': '🎾',
+        'Track Fields': '🏃‍♂️',
+        'Trails': '🚶‍♂️',
+        'Views': '🌄',
+        'Volleyball Courts': '🏐',
+        'Wading Pools': '🩱'
+    };
     let availableFeatures = features.filter(f => park[f] && park[f].toLowerCase() === 'yes');
-    let featuresHtml = '<h3>Available Features</h3>';
+    let featuresHtml = '';
     if (availableFeatures.length > 0) {
-        featuresHtml += '<ul style="columns:2;">';
         availableFeatures.forEach(f => {
-            featuresHtml += `<li>${f}</li>`;
+            featuresHtml += `<span class="feature-box"><span class="feature-emoji">${featureEmojis[f] || ''}</span>${f}</span>`;
         });
-        featuresHtml += '</ul>';
     } else {
-        featuresHtml += '<div style="color:#888;">No features listed for this park.</div>';
+        featuresHtml = '<div style="color:#888;">No features listed for this park.</div>';
     }
     document.getElementById('dashboard-features').innerHTML = featuresHtml;
 
     // Google Places API: Show photo, rating, and directions link
-    let chartsHtml = '<h3>Google Info</h3>';
+    const ratingElem = document.getElementById('dashboard-park-rating');
+    const reviewsElem = document.getElementById('dashboard-park-reviews');
+    const imageElem = document.getElementById('dashboard-park-image');
+    const directionsBtn = document.getElementById('dashboard-directions');
+    ratingElem.textContent = '';
+    reviewsElem.textContent = '';
+    imageElem.style.display = 'none';
+    imageElem.src = '';
+    directionsBtn.onclick = null;
+    directionsBtn.style.display = 'none';
+
     if (window.google && window.google.maps) {
         const service = new google.maps.places.PlacesService(document.createElement('div'));
         const request = {
@@ -200,79 +271,68 @@ function showParkDashboard(park) {
         service.findPlaceFromQuery(request, function(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
                 const place = results[0];
+                let photoSet = false;
                 // Photo
                 if (place.photos && place.photos.length > 0) {
-                    const photoUrl = place.photos[0].getUrl({maxWidth: 300, maxHeight: 200});
-                    chartsHtml += `<img src="${photoUrl}" alt="${park.name} photo" class="dashboard-photo">`;
+                    const photoUrl = place.photos[0].getUrl({maxWidth: 340, maxHeight: 220});
+                    imageElem.onload = function() {
+                        imageElem.style.display = 'block';
+                    };
+                    imageElem.onerror = function() {
+                        imageElem.style.display = 'none';
+                    };
+                    imageElem.src = photoUrl;
+                    photoSet = true;
                 }
+                // Fallback: Street View if no photo
+                if (!photoSet && place.geometry && place.geometry.location) {
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    fetch('/api/google-maps-key')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.key) {
+                                imageElem.onload = function() {
+                                    imageElem.style.display = 'block';
+                                };
+                                imageElem.onerror = function() {
+                                    imageElem.style.display = 'none';
+                                };
+                                const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=340x220&location=${lat},${lng}&fov=80&heading=70&pitch=0&key=${data.key}`;
+                                imageElem.src = streetViewUrl;
+                            }
+                        });
+                }
+                // If neither photo nor street view is available, hide image after timeout
+                setTimeout(() => {
+                    if (!imageElem.src || imageElem.src === window.location.href || imageElem.naturalWidth === 0) {
+                        imageElem.style.display = 'none';
+                    }
+                }, 1500);
                 // Rating
                 if (place.rating) {
-                    chartsHtml += `<div class="dashboard-rating">Rating: <span class="dashboard-stars">${'★'.repeat(Math.round(place.rating))}</span> (${place.rating} / 5, ${place.user_ratings_total} reviews)</div>`;
+                    ratingElem.textContent = place.rating.toFixed(1);
+                }
+                // Reviews
+                if (place.user_ratings_total !== undefined) {
+                    reviewsElem.textContent = `${place.user_ratings_total} reviews`;
                 }
                 // Directions link
                 if (place.geometry && place.geometry.location && place.place_id) {
                     const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(park.name + ', Seattle, WA')}&destination_place_id=${place.place_id}`;
-                    chartsHtml += `<a href="${directionsUrl}" target="_blank" class="dashboard-directions">Get Directions</a>`;
+                    directionsBtn.style.display = 'block';
+                    directionsBtn.onclick = () => {
+                        window.open(directionsUrl, '_blank');
+                    };
                 }
-                document.getElementById('dashboard-charts').innerHTML = chartsHtml;
-            } else {
-                document.getElementById('dashboard-charts').innerHTML = chartsHtml + '<div style="color:#888;">No Google info found for this park.</div>';
             }
         });
-    } else {
-        document.getElementById('dashboard-charts').innerHTML = chartsHtml + '<div style="color:#888;">Google Maps API not loaded.</div>';
     }
 }
 
 // Helper Function: Show Search Dashboard (under search bar)
 function showSearchDashboard(park) {
-    const dashboard = document.getElementById('search-dashboard');
-    dashboard.style.display = 'block';
-    let html = `<h2>${park.name}</h2>`;
-    // Only list available features
-    let availableFeatures = features.filter(f => park[f] && park[f].toLowerCase() === 'yes');
-    html += '<h3>Available Features</h3>';
-    if (availableFeatures.length > 0) {
-        html += '<ul style="columns:2;">';
-        availableFeatures.forEach(f => {
-            html += `<li>${f}</li>`;
-        });
-        html += '</ul>';
-    } else {
-        html += '<div style="color:#888;">No features listed for this park.</div>';
-    }
-
-    // Google Places API: Show photo, rating, and directions link
-    let chartsHtml = '<h3>Google Info</h3>';
-    if (window.google && window.google.maps) {
-        const service = new google.maps.places.PlacesService(document.createElement('div'));
-        const request = {
-            query: park.name + ', Seattle, WA',
-            fields: ['name', 'photos', 'rating', 'user_ratings_total', 'geometry', 'place_id']
-        };
-        service.findPlaceFromQuery(request, function(results, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-                const place = results[0];
-                // Photo
-                if (place.photos && place.photos.length > 0) {
-                    const photoUrl = place.photos[0].getUrl({maxWidth: 300, maxHeight: 200});
-                    chartsHtml += `<img src="${photoUrl}" alt="${park.name} photo" class="dashboard-photo">`;
-                }
-                // Rating
-                if (place.rating) {
-                    chartsHtml += `<div class="dashboard-rating">Rating: <span class="dashboard-stars">${'★'.repeat(Math.round(place.rating))}</span> (${place.rating} / 5, ${place.user_ratings_total} reviews)</div>`;
-                }
-                // Directions link
-                if (place.geometry && place.geometry.location && place.place_id) {
-                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(park.name + ', Seattle, WA')}&destination_place_id=${place.place_id}`;
-                    chartsHtml += `<a href="${directionsUrl}" target="_blank" class="dashboard-directions">Get Directions</a>`;
-                }
-                dashboard.innerHTML = html + chartsHtml;
-            } else {
-                dashboard.innerHTML = html + chartsHtml + '<div style="color:#888;">No Google info found for this park.</div>';
-            }
-        });
-    } else {
-        dashboard.innerHTML = html + chartsHtml + '<div style="color:#888;">Google Maps API not loaded.</div>';
-    }
+    // Use the same dashboard as the map marker popup
+    document.getElementById('search-dashboard').style.display = 'none';
+    showParkDashboard(park);
 }
