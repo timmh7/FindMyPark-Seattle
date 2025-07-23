@@ -87,20 +87,39 @@ async function parseQueryToFilters(query) {
   }
 }
 
-// Main route
+// Park AI Route
 app.post('/park-assistant', async (req, res) => {
   const { query } = req.body;
   if (!query) return res.status(400).json({ response: "No query provided." });
 
   try {
+    // Parse the user query to filters
     const filters = await parseQueryToFilters(query);
 
-    // TODO: Load parks DB and filter based on filters
-    // i.e: const parks = await fs.readFile('parks-db.csv', 'utf8');
-    // Then parse CSV and filter
+    // Load parks database CSV and turn it into json
+    // Format looks like this:
+    //   { name: 'Park A', lat: '...', lng: '...', restrooms: 'yes', ... },
+    // { name: 'Park B', lat: '...', lng: '...', restrooms: 'no',  ... },
+    const csvText = await fs.readFile(path.join(__dirname, 'public', 'parks-features.csv'), 'utf8');
+    const rows = csvText.split('\n');
+    const headers = rows[0].split(',');
+    const parks = rows.slice(1) // get rid of header row
+      .filter(line => line.trim().length > 0)
+      .map(line => {
+        const values = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = values[i]);
+        return obj;
+      });
 
-    // For now, just return the filters as a demo
-    res.json({ response: `Filters extracted: ${JSON.stringify(filters)}` });
+    // Return parks based on filtered user input
+    const matchingParks = parks.filter(park => {
+      return Object.entries(filters).every(([key, value]) => {
+        return park[key] && park[key].toLowerCase() === value.toLowerCase();
+      });
+    }).map(park => park.name);
+
+    res.json({ response: `Matching parks: ${matchingParks.join(', ')}` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ response: "AI assistant failed." });
