@@ -36,13 +36,36 @@ async function parseQueryToFilters(query) {
     You are a helpful assistant that extracts JSON filters from user queries about Seattle parks.
 
     Only return a compact JSON object with keys from this list:
-    - dog_friendly (true/false)
-    - bathrooms (true/false)
-    - playground (true/false)
-    - water_access (true/false)
-    - neighborhood (string)
+    -adult_fitness_equipment (yes/no)
+    -art_in_the_park (yes/no)
+    -baseball/softball_fields (yes/no)
+    -basketball_courts (yes/no)
+    -dog_off_leash_areas (yes/no)
+    -drinking_fountains (yes/no)
+    -fire_pits (yes/no)
+    -fishing_piers (yes/no)
+    -football_fields (yes/no)
+    -gardens (yes/no)
+    -grills (yes/no)
+    -hand_carry_boat_launches (yes/no)
+    -motorized_boat_launches (yes/no)
+    -picnic_sites (yes/no)
+    -play_area (yes/no)
+    -restrooms (yes/no)
+    -skate_park (yes/no)
+    -soccer_fields (yes/no)
+    -spray_parks (yes/no)
+    -swimming_beaches (yes/no)
+    -tennis_courts (yes/no)
+    -track_fields (yes/no)
+    -trails (yes/no)
+    -views (yes/no)
+    -volleyball_courts (yes/no)
+    -wading_pools (yes/no)
 
-    Only include keys the user clearly asks for. Don't make assumptions.
+    If the user's query strongly implies a feature, you may include it.
+    Avoid guessing beyond what is clearly stated or strongly implied.
+    Return only JSON.
     `;
 
   const response = await client.chat.completions.create({

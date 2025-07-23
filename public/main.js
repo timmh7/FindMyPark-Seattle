@@ -57,32 +57,32 @@ d3.json("city-limits.geojson").then(boundaryData => {
 // ---------------------------------------------------------------------------------------------
 
 const features = [
-    'Adult Fitness Equipment',
-    'Art in the Park',
-    'Baseball/Softball Fields',
-    'Basketball Courts',
-    'Dog Off Leash Areas',
-    'Drinking fountains',
-    'Fire Pits',
-    'Fishing piers',
-    'Football Fields',
-    'Gardens',
-    'Grills',
-    'Hand Carry Boat Launches',
-    'Motorized Boat Launches',
-    'Picnic Sites',
-    'Play Area',
-    'Restrooms',
-    'Skate Park',
-    'Soccer Fields',
-    'Spray Parks',
-    'Swimming Beaches',
-    'Tennis Courts',
-    'Track Fields',
-    'Trails',
-    'Views',
-    'Volleyball Courts',
-    'Wading Pools'
+  'adult_fitness_equipment',
+  'art_in_the_park',
+  'baseball/softball_fields',
+  'basketball_courts',
+  'dog_off_leash_areas',
+  'drinking_fountains',
+  'fire_pits',
+  'fishing_piers',
+  'football_fields',
+  'gardens',
+  'grills',
+  'hand_carry_boat_launches',
+  'motorized_boat_launches',
+  'picnic_sites',
+  'play_area',
+  'restrooms',
+  'skate_park',
+  'soccer_fields',
+  'spray_parks',
+  'swimming_beaches',
+  'tennis_courts',
+  'track_fields',
+  'trails',
+  'views',
+  'volleyball_courts',
+  'wading_pools'
 ];
 
 let allParks = []; // Field: Parks, each element is a row from CSV
@@ -128,6 +128,7 @@ function filterAndRenderParks() {
 // Load the CSV
 d3.csv("parks-features.csv").then(data => {
     allParks = data;
+    console.log('Loaded parks:', allParks.length);
     filterAndRenderParks();
     features.forEach(f => {
         const el = document.getElementById('filter-' + f);
@@ -211,6 +212,35 @@ function showParkDashboard(park) {
     document.getElementById('dashboard-park-name').textContent = park.name;
 
     // Features as green boxes with emojis
+    const featureNames = {
+        adult_fitness_equipment: 'Adult Fitness Equipment',
+        art_in_the_park: 'Art in the Park',
+        baseball_softball_fields: 'Baseball/Softball Fields',
+        basketball_courts: 'Basketball Courts',
+        dog_off_leash_areas: 'Dog Off Leash Areas',
+        drinking_fountains: 'Drinking fountains',
+        fire_pits: 'Fire Pits',
+        fishing_piers: 'Fishing piers',
+        football_fields: 'Football Fields',
+        gardens: 'Gardens',
+        grills: 'Grills',
+        hand_carry_boat_launches: 'Hand Carry Boat Launches',
+        motorized_boat_launches: 'Motorized Boat Launches',
+        picnic_sites: 'Picnic Sites',
+        play_area: 'Play Area',
+        restrooms: 'Restrooms',
+        skate_park: 'Skate Park',
+        soccer_fields: 'Soccer Fields',
+        spray_parks: 'Spray Parks',
+        swimming_beaches: 'Swimming Beaches',
+        tennis_courts: 'Tennis Courts',
+        track_fields: 'Track Fields',
+        trails: 'Trails',
+        views: 'Views',
+        volleyball_courts: 'Volleyball Courts',
+        wading_pools: 'Wading Pools'
+    };
+
     const featureEmojis = {
         'Adult Fitness Equipment': '🏋️',
         'Art in the Park': '🎨',
@@ -239,11 +269,13 @@ function showParkDashboard(park) {
         'Volleyball Courts': '🏐',
         'Wading Pools': '🩱'
     };
+
     let availableFeatures = features.filter(f => park[f] && park[f].toLowerCase() === 'yes');
     let featuresHtml = '';
     if (availableFeatures.length > 0) {
         availableFeatures.forEach(f => {
-            featuresHtml += `<span class="feature-box"><span class="feature-emoji">${featureEmojis[f] || ''}</span>${f}</span>`;
+            const readable = featureNames[f] || f;
+            featuresHtml += `<span class="feature-box"><span class="feature-emoji">${featureEmojis[readable] || ''}</span>${readable}</span>`;
         });
     } else {
         featuresHtml = '<div style="color:#888;">No features listed for this park.</div>';

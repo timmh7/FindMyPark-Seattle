@@ -1,3 +1,4 @@
+/* Park dashboard/dashboard elements below */
 .park-dashboard {
     background: #fff;
     border-radius: 16px;
@@ -36,8 +37,6 @@
     min-width: 70px;
     gap: 6px;
 }
-
-
 .dashboard-park-reviews {
     font-size: 0.95em;
     color: #555;
@@ -82,7 +81,6 @@
     object-fit: cover;
     box-shadow: 0 2px 12px rgba(56,142,60,0.10);
 }
-
 .dashboard-directions {
     background: #388e3c;
     color: #fff;
@@ -101,6 +99,7 @@
     background: #2e7031;
 }
 
+/* Other CSS */
 #map {
     width: 600px;
     height: 800px;
