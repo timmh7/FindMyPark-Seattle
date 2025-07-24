@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seattle Greenspace Explorer</title>
+    <title>FindMyPark Seattle</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- Lenis Smooth Scroll-->
+    <script src="https://unpkg.com/lenis@1.3.8/dist/lenis.min.js"></script> 
 
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -12,6 +19,7 @@
     
     <!-- D3 -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
     <!-- Google Maps JavaScript API loaded dynamically -->
     <script>
       fetch('/api/google-maps-key')
@@ -30,25 +38,41 @@
 
 <body>
     <!-- Intro Screen -->
-    <div id="intro-screen" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #e8f5e9;">
-        <h1 style="font-size: 3em; margin-bottom: 32px; color: #388e3c;">Seattle Greenspaces Explorer</h1>
-        <div style="display: flex; gap: 32px; margin-bottom: 40px;">
-            <button id="btn-search" style="padding: 16px 32px; font-size: 1.2em; background: #66bb6a; color: white; border: none; border-radius: 8px; cursor: pointer;">Search Park</button>
-            <button id="btn-map" style="padding: 16px 32px; font-size: 1.2em; background: #388e3c; color: white; border: none; border-radius: 8px; cursor: pointer;">View Map</button>
-        </div>
-        <div style="display: flex; gap: 48px; justify-content: center; align-items: center; margin-top: 24px;">
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <span style="font-size: 2em; color: #388e3c;">&#127795;</span>
-                <span style="margin-top: 8px; font-size: 1.1em;">400+ Parks</span>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <span style="font-size: 2em; color: #388e3c;">&#127807;</span>
-                <span style="margin-top: 8px; font-size: 1.1em;">Natural Beauty</span>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <span style="font-size: 2em; color: #388e3c;">&#128694;&#8205;&#9792;&#65039;</span>
-                <span style="margin-top: 8px; font-size: 1.1em;">Easy Access</span>
-            </div>
+    <div id="intro-screen" style="height: 100vh; display: flex; justify-content: center; align-items: center; background: #e8f5e9; position: relative; overflow: hidden;">
+        <!-- Decorative leaves/trees -->
+        <img src="img-assets/tree.png" class="intro-decor" style="top: 8%; left: 6%;" alt="Leaf decor" />
+        <img src="img-assets/leaf.png" class="intro-decor" style="top: 18%; right: 8%;" alt="Tree decor" />
+        <img src="img-assets/leaf.png" class="intro-decor" style="bottom: 12%; left: 12%; transform: rotate(-18deg);" alt="Leaf decor" />
+        <img src="img-assets/tree.png" class="intro-decor" style="bottom: 10%; right: 10%; transform: scale(0.9) rotate(8deg);" alt="Tree decor" />
+        <!-- Middle decorative images, not over main content -->
+        <img src="img-assets/leaf.png" class="intro-decor" style="top: 56%; right: 26%;" alt="Tree decor" />
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px;">
+          <h1 style="font-size: 3.5em; margin-bottom: 12px; color: #388e3c;">FindMyPark Seattle</h1>
+          <div style="font-size: 1.4em; color: #444; margin-bottom: 32px; text-align: center; max-width: 600px; line-height: 1.35;">
+            A project to discover the hidden gems and beloved parks<br>
+            that make Seattle one of America's greenest cities
+          </div>
+          <div style="display: flex; gap: 32px; margin-bottom: 40px;">
+              <button id="btn-AI" style="padding: 16px 32px; font-size: 1.2em; background: #66bb6a; color: white; border: none; border-radius: 8px; cursor: pointer;">AI Park Guide</button>
+              <button id="btn-explore" style="padding: 16px 32px; font-size: 1.2em; background: #388e3c; color: white; border: none; border-radius: 8px; cursor: pointer;">Explore Parks</button>
+          </div>
+          <div style="display: flex; gap: 48px; justify-content: center; align-items: center; margin-top: 24px;">
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                  <span class="emoji-circle" style="font-size: 2em; color: #388e3c;">&#127795;</span>
+                  <span style="margin-top: 8px; font-size: 1.3em; color: #222; font-weight: bold;">400+ Parks</span>
+                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">From neighborhood gems to<br>vast wilderness areas</span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                  <span class="emoji-circle" style="font-size: 2em; color: #388e3c;">&#127807;</span>
+                  <span style="margin-top: 8px; font-size: 1.3em; color: #222; font-weight: bold;">Natural Beauty</span>
+                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">Discover waterfalls, gardens, and<br>scenic trails</span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center;">
+                  <span class="emoji-circle" style="font-size: 2em; color: #444;">&#128694;&#8205;&#9792;&#65039;</span>
+                  <span style="margin-top: 8px; font-size: 1.3em; color: #222; font-weight: bold;">Easy Access</span>
+                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">Find parks near you with detailed<br>directions</span>
+              </div>
+          </div>
         </div>
     </div>
 
@@ -58,7 +82,7 @@
     <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">
         Ask our Park Guide
     </h2>
-    <p style="font-size: 0.95em; color: #555; margin-bottom: 24px; text-align: center;">
+    <p style="font-size: 1.2em; color: #444; margin-bottom: 24px; text-align: center;">
         Describe specific features you're looking for and let our AI guide help you find the perfect Seattle park
     </p>
 
@@ -68,7 +92,7 @@
       </div>
         <button id="ai-guide-btn">
         <span>Ask Guide</span>
-        <span style="font-size:1em; margin-left:4px;">✨</span>
+        <span style="font-size:1em; margin-left:2px; margin-right:-10px">✨</span>
         </button>
     </div>
 
@@ -82,7 +106,7 @@
     <section id="map-section" style="background: #f5f5f7; padding: 48px 0; margin-top: 32px;">
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px;">
             <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">Find & Explore Parks</h2>
-            <p style="font-size: 1em; color: #666; margin-bottom: 32px; text-align: center;">
+            <p style="font-size: 1.2em; color: #444; margin-bottom: 32px; text-align: center;">
                 Search to learn more about your favorite park, explore outdoor spaces on our interactive map
             </p>
 
@@ -111,9 +135,9 @@
                 ></ul>
             </div>
 
-            <div style="margin-bottom: 8px; text-align: left; font-size: 1.08em; color: #000000; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+            <div style="margin-bottom: 8px; text-align: left; font-size: 1.08em; color: #444; font-weight: 500; display: flex; align-items: center; gap: 8px;">
                 <img src="/img-assets/filter.png" alt="Filter icon" style="height: 1.2em; width: auto; vertical-align: middle; margin-right: 4px;" />
-                Filter by type:
+                Filter by features:
             </div>
 
             <div id="filters" style="margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 12px;">
@@ -222,6 +246,7 @@
             </div>
         </div>
     </section>
+
     <script src="main.js"></script>
 </body>
 </html>

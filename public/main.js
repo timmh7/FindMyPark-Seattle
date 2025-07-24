@@ -1,6 +1,36 @@
+// Lenis smooth scroll
+window.addEventListener('DOMContentLoaded', () => {
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
+    direction: 'vertical',
+    gestureDirection: 'vertical',
+    mouseMultiplier: 1,
+    smoothTouch: false,
+    touchMultiplier: 2,
+    infinite: false
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+
+   lenis.scrollTo(0, { immediate: true }); // instantly scroll to top
+});
+
+// ---------------------------------------------------------------------------------------------
+
 // Park Guide Assistant: Frontend logic to send user query to backend
 document.addEventListener('DOMContentLoaded', function() {
+  // Always clear AI input and search box on page load
   const aiInput = document.getElementById('ai-guide-input');
+  if (aiInput) aiInput.value = '';
+  const searchInput = document.getElementById('park-searchbar');
+  if (searchInput) searchInput.value = '';
   const aiBtn = document.getElementById('ai-guide-btn');
   const aiResponse = document.getElementById('ai-guide-response');
   if (aiBtn && aiInput && aiResponse) {
@@ -32,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-
+// ---------------------------------------------------------------------------------------------
 
 // Create leaflet map centered on Seattle
 const map = L.map('map').setView([47.6062, -122.3321], 12);
@@ -138,19 +168,19 @@ d3.csv("parks-features.csv").then(data => {
     });
 
     // Intro screen button logic
-    const btnSearch = document.getElementById('btn-search');
-    const btnMap = document.getElementById('btn-map');
-    if (btnSearch) {
-        btnSearch.addEventListener('click', function() {
-            const searchbar = document.getElementById('searchbar-container');
-            if (searchbar) {
-                searchbar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const btnAI = document.getElementById('btn-AI');
+    const btnExplore = document.getElementById('btn-explore');
+    if (btnAI) {
+        btnAI.addEventListener('click', function() {
+            const aiGuide = document.getElementById('ai-section');
+            if (aiGuide) {
+                aiGuide.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     }
-    if (btnMap) {
-        btnMap.addEventListener('click', function() {
-            const mapDiv = document.getElementById('map');
+    if (btnExplore) {
+        btnExplore.addEventListener('click', function() {
+            const mapDiv = document.getElementById('map-section');
             if (mapDiv) {
                 mapDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -217,7 +247,7 @@ function showParkDashboard(park) {
     const featureNames = {
         adult_fitness_equipment: 'Adult Fitness Equipment',
         art_in_the_park: 'Art in the Park',
-        baseball_softball_fields: 'Baseball/Softball Fields',
+        "baseball/softball_fields": 'Baseball/Softball Fields',
         basketball_courts: 'Basketball Courts',
         dog_off_leash_areas: 'Dog Off Leash Areas',
         drinking_fountains: 'Drinking fountains',
