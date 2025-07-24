@@ -54,20 +54,25 @@
 
 
     <!-- AI Park Guide Section -->
-    <section id="ai-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 700px;">
+    <section id="ai-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 800px;">
     <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">
         Ask our Park Guide
     </h2>
     <p style="font-size: 0.95em; color: #555; margin-bottom: 24px; text-align: center;">
-        Describe what you're looking for and let our AI guide help you find the perfect Seattle park
+        Describe specific features you're looking for and let our AI guide help you find the perfect Seattle park
     </p>
-    <div style="display: flex; gap: 12px; align-items: flex-start; justify-content: center;">
-        <div style="flex: 1; position: relative;">
-            <input type="text" id="ai-guide-input" placeholder="e.g., I want a park with hiking trails and nice views..." style="width: 100%; padding: 14px 16px; font-size: 1em; border-radius: 10px; border: 2px solid #999; background: #fff; box-sizing: border-box;" />
-        </div>
-        <button id="ai-guide-btn" style="padding: 14px 28px; font-size: 1em; background: #388e3c; color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 6px rgba(56,142,60,0.10);">Ask Guide</button>
+
+    <div class="ai-guide-box">
+      <div style="flex: 1; position: relative;">
+        <input type="text" id="ai-guide-input" placeholder="e.g., I want a park with hiking trails and nice views..." />
+      </div>
+        <button id="ai-guide-btn">
+        <span>Ask Guide</span>
+        <span style="font-size:1em; margin-left:4px;">✨</span>
+        </button>
     </div>
-    <div id="ai-guide-response" style="margin-top: 18px; font-size: 1.05em; color: #222; text-align: left;"></div>
+
+    <div id="ai-guide-response"></div>
     </section>
 
 

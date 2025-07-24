@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
   if (aiBtn && aiInput && aiResponse) {
     aiBtn.addEventListener('click', async function() {
       const query = aiInput.value.trim(); // Grab user's query
-      if (!query) {  // No input
+      if (!query) {
         aiResponse.textContent = 'Please enter what you are looking for.';
         return;
       }
       aiResponse.textContent = 'Thinking...';
+      aiResponse.classList.add('blinking');
 
       try {
         // Send user's query to backend as a POST request
@@ -21,9 +22,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         if (!res.ok) throw new Error('Server error');
         const data = await res.json();
-        // Show server's response, else no answer
-        aiResponse.textContent = data.response || 'No answer found.';
-      } catch (err) { // Server error, show error message
+        aiResponse.classList.remove('blinking');
+        aiResponse.innerHTML = (data.response || 'No answer found.').replace(/\n/g, '<br>');
+      } catch (err) {
+        aiResponse.classList.remove('blinking');
         aiResponse.textContent = 'Sorry, something went wrong.';
       }
     });

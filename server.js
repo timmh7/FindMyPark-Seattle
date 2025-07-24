@@ -26,8 +26,8 @@ app.get('/', (req, res) => {
 });
 // -----------------------------------------------------------------------------------------
 // OpenAI API Requests
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY // Make sure your key is in .env
+const OpenAIClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 // Step 1: Parse Query to Filters using GPT
@@ -63,12 +63,15 @@ async function parseQueryToFilters(query) {
     -volleyball_courts (yes/no)
     -wading_pools (yes/no)
 
-    If the user's query strongly implies a feature, you may include it.
-    Avoid guessing beyond what is clearly stated or strongly implied.
+    If the user's query implies a feature, you may include it.
+    Examples:
+    - "I want to go fishing" → { "fishing_piers": "yes" }
+    - "A place to play soccer and eat lunch" → { "soccer_fields": "yes", "picnic_sites": "yes" }
+
     Return only JSON.
     `;
 
-  const response = await client.chat.completions.create({
+  const response = await OpenAIClient.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.2,
     messages: [
@@ -93,13 +96,10 @@ app.post('/park-assistant', async (req, res) => {
   if (!query) return res.status(400).json({ response: "No query provided." });
 
   try {
-    // Parse the user query to filters
+    // 1. Parse the user query to filters
     const filters = await parseQueryToFilters(query);
 
-    // Load parks database CSV and turn it into json
-    // Format looks like this:
-    //   { name: 'Park A', lat: '...', lng: '...', restrooms: 'yes', ... },
-    // { name: 'Park B', lat: '...', lng: '...', restrooms: 'no',  ... },
+    // 2. Load parks database CSV and turn it into json objects
     const csvText = await fs.readFile(path.join(__dirname, 'public', 'parks-features.csv'), 'utf8');
     const rows = csvText.split('\n');
     const headers = rows[0].split(',');
@@ -112,14 +112,72 @@ app.post('/park-assistant', async (req, res) => {
         return obj;
       });
 
-    // Return parks based on filtered user input
+    // Step 3: Filter matching parks using original logic
     const matchingParks = parks.filter(park => {
       return Object.entries(filters).every(([key, value]) => {
         return park[key] && park[key].toLowerCase() === value.toLowerCase();
       });
-    }).map(park => park.name);
+    });
 
-    res.json({ response: `Matching parks: ${matchingParks.join(', ')}` });
+    // Create HTML-linked park names
+    const linkedParks = matchingParks.map(park => ({
+      name: park.name,
+      link: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(park.name + ' Seattle WA')}`
+    }));
+
+    const parkLinksHTML = linkedParks.map(p => `- <a href="${p.link}" target="_blank">${p.name}</a>`).join('\n');
+
+    // Step 4: Generate natural language summary using OpenAI
+    const featureList = Object.keys(filters)
+      .map(f => f.replace(/_/g, ' '))
+      .join(', ');
+
+    const parkNames = matchingParks.map(p => `- ${p.name}`).join('\n');
+
+    const prompt = `
+      You are a helpful and friendly Seattle parks assistant.
+      Make the response fun, add some emojis here and there (do not add emojis when listing the parks).
+
+      The user asked for parks with the following features:
+      ${featureList.split(', ').map(f => `- ${f}`).join('\n') || '(none provided)'}
+
+      Here are the matching parks:
+      ${parkNames ? parkNames.split('\n').map(p => `- ${p}`).join('\n') : '(none)'}
+
+      Here are the matching parks with links:
+      ${parkLinksHTML || '(none)'}
+
+      Your task:
+      - If there are features provided and matching parks, list them in a friendly way based on the linked parks.
+      - If there are features but NO matching parks, suggest the user adjust their search.
+      - If there are NO features provided, tell the user to enter specific park features (like "dog-friendly" or "restrooms").
+
+      DO NOT suggest any random parks from your own knowledge.
+      DO NOT list example parks unless they were matched from the query.
+      ONLY use parks from the provided matching list.
+      ONLY discuss features the user provided.
+
+      Output a short, friendly, and accurate response based ONLY on the data above.
+    `;
+
+
+    const completion = await OpenAIClient.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: "You are a friendly and helpful Seattle parks assistant." },
+        { role: "user", content: prompt }
+      ]
+    });
+
+    // 1: Get plain GPT text
+    const gptResponse = completion.choices[0].message.content;
+
+    // 2: Convert GPT response to HTML (basic line breaks)
+    const htmlResponse = gptResponse.replace(/\n/g, '<br>');
+    const fullHTML = htmlResponse.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    // Send to frontend
+    res.json({ response: fullHTML });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ response: "AI assistant failed." });
