@@ -1,3 +1,7 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
 html, body {
   overflow: auto;
   scrollbar-width: none;
