@@ -7,7 +7,7 @@
       }
     </style>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Seattle Parks Finder</title>
     <link rel="stylesheet" href="style.css" />
 
@@ -226,7 +226,9 @@
             </div>
 
             <div style="display: flex; gap: 32px; align-items: flex-start;">
-                <div id="map" style="flex: 2 1 0; min-width: 0; height: 600px; border-radius: 12px; box-shadow: 0 2px 16px rgba(56,142,60,0.08);"></div>
+                <div id = "map-wrapper">
+                    <div id="map"></div>
+                </div>
                 <div style="flex: 1 1 350px; min-width: 320px; max-width: 400px; min-height: 400px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
                     <div id="dashboard-empty-message" style="color: #888; font-size: 1.1em; margin-top: 32px; text-align: center; display: block;">No park currently selected</div>
                     <div id="park-dashboard" class="park-dashboard">

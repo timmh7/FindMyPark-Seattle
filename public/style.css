@@ -1,5 +1,7 @@
 body {
   font-family: 'Inter', sans-serif;
+  padding: 0;
+  margin: 0;
 }
 
 html, body {
@@ -10,6 +12,19 @@ html, body {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
+}
+
+/* For leaflet map */
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+}
+#map {
+  box-shadow: 0 2px 16px rgba(56,142,60,0.08);
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
 }
 
 /* Decorative images for intro section */
@@ -52,11 +67,6 @@ body::-webkit-scrollbar {
   color: #388e3c;
   box-shadow: 0 2px 8px rgba(56,142,60,0.10);
   transition: background 0.2s;
-}
-
-#map {
-  box-shadow: 0 6px 32px 0 rgba(56,142,60,0.18), 0 1.5px 6px 0 rgba(0,0,0,0.10);
-  border-radius: 12px;
 }
 
 /* Filter button hover effect */
