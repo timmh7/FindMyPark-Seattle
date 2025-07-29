@@ -4,6 +4,12 @@ body {
   margin: 0;
 }
 
+@media (max-width: 800px) {
+  #fact-1 {
+    transform: translateY(-9px);
+  }
+}
+
 html, body {
   overflow: auto;
   scrollbar-width: none;
@@ -79,16 +85,17 @@ body::-webkit-scrollbar {
   box-shadow: 0 2px 6px rgba(56,142,60,0.10);
   z-index: 2;
 }
+
 #map {
     width: 600px;
     height: 800px;
+    max-width: 100%;
 }
-
-.main-layout {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 32px;
+/* Base layout: side-by-side (desktop) */
+.map-layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
 }
 
 /* AI Guide Box Styling */
@@ -202,103 +209,154 @@ body::-webkit-scrollbar {
   100% { opacity: 1; }
 }
 
-/* Park dashboard/dashboard elements below */
-.park-dashboard {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(56,142,60,0.15);
-    border: 1px solid #e0e0e0;
-    padding: 28px 24px 32px 24px;
-    width: 100%;
-    min-height: 400px;
-    margin-left: 0;
-    box-sizing: border-box;
-    display: none;
+/* Dashboard column settings (for mobile) */
+.dashboard-column {
+  flex: 1 1 350px;
+  min-width: 320px;
+  max-width: 400px;
+  min-height: 400px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 800px) {
+  .map-layout {
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-start;
+  }
+
+  #map {
+    height: 500px;
+  }
+  #map-wrapper,
+  .dashboard-column {
+    width: 100%;
+  }
 }
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-.dashboard-park-name {
-    font-size: 1.35em;
-    color: #222;
-    margin: 0;
-    font-weight: 700;
-    text-align: left;
-}
-.dashboard-rating {
+
+.main-layout {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    font-size: 1.3em;
-    color: #388e3c;
-    font-weight: 600;
-    min-width: 70px;
-    gap: 6px;
+    align-items: flex-start;
+    gap: 32px;
+}
+/* Park dashboard/dashboard elements below */
+.park-dashboard {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(56,142,60,0.15);
+  border: 1px solid #e0e0e0;
+  padding: 28px 24px 32px 24px;
+  width: 100%;
+  margin-left: 0;
+  box-sizing: border-box;
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.dashboard-park-name {
+  font-size: 1.35em;
+  color: #222;
+  margin: 0;
+  font-weight: 700;
+  text-align: left;
+}
+.dashboard-rating {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1.3em;
+  color: #388e3c;
+  font-weight: 600;
+  min-width: 70px;
+  gap: 6px;
 }
 .dashboard-park-reviews {
-    font-size: 0.95em;
-    color: #555;
-    font-weight: 400;
-    margin-top: 2px;
-    text-align: right;
-    display: block;
-    white-space: nowrap;
+  font-size: 0.95em;
+  color: #555;
+  font-weight: 400;
+  margin-top: 2px;
+  text-align: right;
+  display: block;
+  white-space: nowrap;
 }
 .star-emoji {
-    margin-right: 4px;
+  margin-right: 4px;
 }
 .dashboard-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 .feature-box {
-    background: #e8f5e9;
-    color: #555;
-    border-radius: 18px;
-    padding: 7px 16px;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 1px 4px rgba(56,142,60,0.08);
-    font-weight: 500;
-    border: none;
+  background: #e8f5e9;
+  color: #555;
+  border-radius: 18px;
+  padding: 7px 16px;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(56,142,60,0.08);
+  font-weight: 500;
+  border: none;
 }
 .feature-emoji {
-    margin-right: 7px;
-    font-size: 1.2em;
+  margin-right: 7px;
+  font-size: 1.2em;
 }
 .dashboard-park-image {
-    width: 100%;
-    max-width: 340px;
-    height: auto;
-    border-radius: 12px;
-    margin: 0 auto 22px auto;
-    display: block;
-    object-fit: cover;
-    box-shadow: 0 2px 12px rgba(56,142,60,0.10);
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  border-radius: 12px;
+  margin: 0 auto 22px auto;
+  display: block;
+  object-fit: cover;
+  box-shadow: 0 2px 12px rgba(56,142,60,0.10);
 }
 .dashboard-directions {
-    background: #388e3c;
-    color: #fff;
-    font-size: 1.2em;
-    font-weight: 600;
-    border: none;
-    border-radius: 10px;
-    padding: 16px 0;
-    width: 100%;
-    margin-top: 18px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(56,142,60,0.10);
-    transition: background 0.2s;
+  background: #388e3c;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 0;
+  width: 100%;
+  margin-top: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(56,142,60,0.10);
+  transition: background 0.2s;
 }
 .dashboard-directions:hover {
     background: #2e7031;
+}
+.dashboard-reviews {
+  background: #f4846b;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 0;
+  width: 100%;
+  margin-top: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(56,142,60,0.10);
+  transition: background 0.2s;
+}
+.dashboard-reviews:hover {
+    background: #f35f3e;
 }

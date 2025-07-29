@@ -42,7 +42,7 @@
 
 <body>
     <!-- Intro Screen -->
-    <div id="intro-screen" style="height: 100vh; display: flex; justify-content: center; align-items: center; background: #e8f5e9; position: relative; overflow: hidden;">
+    <div id="intro-screen" style="height: 100vh; display: flex; justify-content: center; align-items: center; background: #e8f5e9; position: relative; overflow: hidden; padding: 16px;">
         <!-- Decorative leaves/trees -->
         <img src="img-assets/tree.png" class="intro-decor" style="top: 8%; left: 6%;" alt="Leaf decor" />
         <img src="img-assets/leaf.png" class="intro-decor" style="top: 18%; right: 8%;" alt="Tree decor" />
@@ -50,57 +50,61 @@
         <img src="img-assets/tree.png" class="intro-decor" style="bottom: 10%; right: 10%; transform: scale(0.9) rotate(8deg);" alt="Tree decor" />
         <!-- Middle decorative images, not over main content -->
         <img src="img-assets/leaf.png" class="intro-decor" style="top: 56%; right: 26%;" alt="Tree decor" />
+        
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 900px;">
           <h1 style="font-size: 3.5em; margin-bottom: 12px; color: #388e3c;">Seattle Parks Finder</h1>
           <div style="font-size: 1.3em; color: #444; margin-bottom: 32px; text-align: center; max-width: 600px; line-height: 1.35;">
-            A project to discover the hidden gems and beloved parks<br>
-            that make Seattle one of America's greenest cities
+            A project to discover the hidden gems and beloved parks that make Seattle one of America's greenest cities
           </div>
           <div style="display: flex; gap: 32px; margin-bottom: 40px;">
               <button id="btn-AI" style="padding: 16px 32px; font-size: 1.2em; background: #66bb6a; color: white; border: none; border-radius: 8px; cursor: pointer;">AI Park Guide</button>
               <button id="btn-explore" style="padding: 16px 32px; font-size: 1.2em; background: #388e3c; color: white; border: none; border-radius: 8px; cursor: pointer;">Explore Parks</button>
           </div>
-          <div style="display: flex; gap: 48px; justify-content: center; align-items: center; margin-top: 24px;">
-              <div style="display: flex; flex-direction: column; align-items: center;">
+          
+          <div style="display: flex; justify-content: center; align-items: center; margin-top: 24px; gap: 32px;">
+              <div id="fact-1" style="display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 220px;">
                   <span class="emoji-circle" style="font-size: 2em; color: #388e3c;">&#127795;</span>
                   <span style="margin-top: 8px; font-size: 1.3em; color: #222; font-weight: bold;">400+ Parks</span>
-                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">From neighborhood gems to<br>vast wilderness areas</span>
+                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">From neighborhood gems to vast wilderness areas</span>
               </div>
-              <div style="display: flex; flex-direction: column; align-items: center;">
+
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 220px;">
                   <span class="emoji-circle" style="font-size: 2em; color: #388e3c;">&#127807;</span>
                   <span style="margin-top: 8px; font-size: 1.3em; color: #222; font-weight: bold;">Natural Beauty</span>
-                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">Discover waterfalls, gardens, and<br>scenic trails</span>
+                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">Discover waterfalls, gardens, and scenic trails</span>
               </div>
-              <div style="display: flex; flex-direction: column; align-items: center;">
+
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 220px;">
                   <span class="emoji-circle" style="font-size: 2em; color: #444;">&#128694;&#8205;&#9792;&#65039;</span>
                   <span style="margin-top: 8px; font-size: 1.3em; color: #222; font-weight: bold;">Easy Access</span>
-                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">Find parks near you with detailed<br>directions</span>
+                  <span style="margin-top: 8px; font-size: 1.1em; color: #444; text-align: center;">Find parks near you with detailed directions</span>
               </div>
-          </div>
+            </div>
         </div>
     </div>
 
 
     <!-- AI Park Guide Section -->
-    <section id="ai-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 800px;">
-    <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">
-        Ask our Park Guide
-    </h2>
-    <p style="font-size: 1.2em; color: #444; margin-bottom: 24px; text-align: center;">
-        Describe specific features you're looking for and let our AI guide help you find the perfect Seattle park
-    </p>
+    <section id="ai-section" style="margin: 48px auto; padding: 24px 16px; width: 100%; max-width: 800px; box-sizing: border-box;">
+        <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">
+            Ask our Park Guide
+        </h2>
 
-    <div class="ai-guide-box">
-      <div style="flex: 1; position: relative;">
-        <input type="text" id="ai-guide-input" placeholder="e.g., I want a park with hiking trails and nice views..." />
-      </div>
-        <button id="ai-guide-btn">
-        <span>Ask Guide</span>
-        <span style="font-size:1em; margin-left:2px; margin-right:-10px">✨</span>
-        </button>
-    </div>
+        <p style="font-size: 1.2em; color: #444; margin-bottom: 24px; text-align: center;">
+            Describe specific features you're looking for and let our AI guide help you find the perfect Seattle park
+        </p>
 
-    <div id="ai-guide-response"></div>
+        <div class="ai-guide-box">
+        <div style="flex: 1; position: relative;">
+            <input type="text" id="ai-guide-input" placeholder="e.g., I want a park with hiking trails and nice views..." />
+        </div>
+            <button id="ai-guide-btn">
+            <span>Ask Guide</span>
+            <span style="font-size:1em; margin-left:2px; margin-right:-10px">✨</span>
+            </button>
+        </div>
+
+        <div id="ai-guide-response"></div>
     </section>
 
 
@@ -108,6 +112,7 @@
     <div id="search-dashboard" style="border:1px solid #ccc; border-radius:8px; padding:24px; background:#fafafa; width: 350px; min-height: 400px; display:none; margin: 32px auto 24px auto;"></div>
     <!-- Interactive Map Section -->
     <section id="map-section" style="background: #f5f5f7; padding: 48px 0; margin-top: 32px;">
+
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px;">
             <h2 style="font-size: 2em; color: #388e3c; margin-bottom: 8px; text-align: center;">Find & Explore Parks</h2>
             <p style="font-size: 1.2em; color: #444; margin-bottom: 32px; text-align: center;">
@@ -225,29 +230,31 @@
             </label>
             </div>
 
-            <div style="display: flex; gap: 32px; align-items: flex-start;">
-                <div id = "map-wrapper">
-                    <div id="map"></div>
-                </div>
-                <div style="flex: 1 1 350px; min-width: 320px; max-width: 400px; min-height: 400px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
-                    <div id="dashboard-empty-message" style="color: #888; font-size: 1.1em; margin-top: 32px; text-align: center; display: block;">No park currently selected</div>
-                    <div id="park-dashboard" class="park-dashboard">
+            <div class="map-layout">
+            <div id="map-wrapper">
+                <div id="map"></div>
+            </div>
 
+            <div class="dashboard-column">
+                <div id="dashboard-empty-message" style="color: #999;">No park currently selected</div>
+
+                <div id="park-dashboard" class="park-dashboard">
+                    <!-- Header -->
                     <div class="dashboard-header">
-                    <h2 id="dashboard-park-name" class="dashboard-park-name"></h2>
-                    <div class="dashboard-rating-wrapper">
-                        <div class="dashboard-rating">
-                        <span class="star-emoji">⭐</span>
-                        <span id="dashboard-park-rating" class="dashboard-park-rating">4.6</span>
+                        <h2 id="dashboard-park-name" class="dashboard-park-name"></h2>
+                        <div class="dashboard-rating-wrapper">
+                            <div class="dashboard-rating">
+                            <span class="star-emoji">⭐</span>
+                            <span id="dashboard-park-rating" class="dashboard-park-rating">4.6</span>
+                            </div>
+                            <span id="dashboard-park-reviews" class="dashboard-park-reviews">123 reviews</span>
                         </div>
-                        <span id="dashboard-park-reviews" class="dashboard-park-reviews">123 reviews</span>
                     </div>
-                    </div>
-                    
-                        <div id="dashboard-features" class="dashboard-features"></div>
-                        <img id="dashboard-park-image" class="dashboard-park-image" src="" alt="Park image" style="display:none;" />
-                        <button id="dashboard-directions" class="dashboard-directions">Directions</button>
-                    </div>
+
+                    <div id="dashboard-features" class="dashboard-features"></div>
+                    <img id="dashboard-park-image" class="dashboard-park-image" src="" alt="Park image" style="display:none;" />
+                    <button id="dashboard-reviews" class="dashboard-reviews">Reviews</button>
+                    <button id="dashboard-directions" class="dashboard-directions">Directions</button>
                 </div>
             </div>
         </div>
