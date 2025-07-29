@@ -211,6 +211,9 @@ body::-webkit-scrollbar {
 
 /* Dashboard column settings (for mobile) */
 .dashboard-column {
+  overflow-y: auto;
+  max-height: 100vh;
+  -webkit-overflow-scrolling: touch;
   flex: 1 1 350px;
   min-width: 320px;
   max-width: 400px;
