@@ -389,10 +389,19 @@ function showParkDashboard(park) {
                         window.open(directionsUrl, '_blank');
                     };
                 }
+
+                // Reviews link
+                const reviewsBtn = document.getElementById('dashboard-reviews');
+                if (reviewsBtn) {
+                    reviewsBtn.style.display = 'block';
+                    reviewsBtn.onclick = () => {
+                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(park.name + ' Seattle WA')}`, '_blank');
+                    };
+                }
             }
         });
     }
-}
+}   
 
 // Helper Function: Show Search Dashboard (under search bar)
 function showSearchDashboard(park) {
