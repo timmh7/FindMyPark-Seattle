@@ -10,24 +10,36 @@ https://data-seattlecitygis.opendata.arcgis.com/
 
 ## Setup Instructions
 
-### 1. Install Dependencies
+### 1. Frontend Setup
 
 First, install the root dependencies:
 ```bash
+cd client
+```
+```bash
 npm install
 ```
+```bash
+npm run build
+```
 
+### 2. Backend Setup
 Then install the React client dependencies:
 ```bash
-cd client && npm install
+npm install && npm start
 ```
 
 ### 2. Environment Variables
 
 Create a `.env` file in the root directory with:
 ```
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-OPENAI_API_KEY=your_openai_api_key
+GOOGLE_MAPS_API_KEY= <your_google_maps_api_key>
+OPENAI_API_KEY= <your_openai_api_key>
+```
+
+Create a `.env` file in the /client directory with:
+```
+REACT_APP_API_URL= http://localhost:5000 #Local host during development or backend URL when hosting
 ```
 
 ### 3. Development Mode
