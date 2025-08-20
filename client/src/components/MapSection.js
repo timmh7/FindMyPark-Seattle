@@ -105,7 +105,7 @@ const MapSection = () => {
       }).addTo(mapInstance.current);
 
       // Load and style Seattle city boundary
-      d3.json("/static/city-limits.geojson").then(boundaryData => {
+      d3.json("/city-limits.geojson").then(boundaryData => {
         L.geoJSON(boundaryData, {
           style: {
             color: "#66bb6a",
@@ -129,7 +129,7 @@ const MapSection = () => {
   // Load parks data
   useEffect(() => {
     const loadParks = async () => {
-      const data = await d3.csv("/static/parks-features.csv");
+      const data = await d3.csv("/parks-features.csv");
       setAllParks(data);
       filterAndRenderParks(data, {});
     };

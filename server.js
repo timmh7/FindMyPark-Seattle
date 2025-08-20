@@ -3,11 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// CORS configuration for separate frontend/backend deployment
+// CORS configuration - allow all origins
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || '*' // Set FRONTEND_URL in production
-    : ['http://localhost:3000', 'http://localhost:3001'], // Local development
+  origin: true, // Allow all origins
   credentials: true
 };
 
@@ -18,18 +16,6 @@ const OpenAI = require('openai');
 const fs = require('fs/promises');
 
 const PORT = process.env.PORT || 5000;
-
-// Serve static files from the React build directory
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'client/build')));
-  // Serve images and other assets from the public folder in production
-  app.use('/img-assets', express.static(path.join(__dirname, 'client/public/img-assets')));
-} else {
-  // In development, serve the client's public folder for assets
-  app.use('/static', express.static(path.join(__dirname, 'client/public')));
-  // Also serve images directly in development for consistency
-  app.use('/img-assets', express.static(path.join(__dirname, 'client/public/img-assets')));
-}
 
 // Endpoint to get Google Maps API key
 app.get('/api/google-maps-key', (req, res) => {
@@ -112,7 +98,7 @@ app.post('/park-assistant', async (req, res) => {
     const filters = await parseQueryToFilters(query);
 
     // 2. Load parks database CSV and turn it into json objects
-    const csvText = await fs.readFile(path.join(__dirname, 'client', 'public', 'parks-features.csv'), 'utf8');
+    const csvText = await fs.readFile(path.join(__dirname, 'parks-features.csv'), 'utf8');
     const rows = csvText.split('\n');
     const headers = rows[0].split(',');
     const parks = rows.slice(1) // get rid of header row
@@ -195,13 +181,6 @@ app.post('/park-assistant', async (req, res) => {
     res.status(500).json({ response: "AI assistant failed." });
   }
 });
-
-// Catch all handler for React Router (production only)
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build/index.html'));
-  });
-}
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
