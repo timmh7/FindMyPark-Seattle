@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import IntroScreen from './components/IntroScreen';
 import AIGuideSection from './components/AIGuideSection';
 import MapSection from './components/MapSection';
+import { API_BASE_URL } from './config';
 import './App.css';
 
 // Import Lenis for smooth scrolling
@@ -21,7 +22,7 @@ const loadLenis = () => {
 function App() {
   useEffect(() => {
     // Load Google Maps API
-    fetch('/api/google-maps-key')
+    fetch(`${API_BASE_URL}/api/google-maps-key`)
         .then(res => res.json())
         .then(data => {
         if (data.key) {

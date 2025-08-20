@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
 const AIGuideSection = () => {
   const [query, setQuery] = useState('');
@@ -17,7 +18,7 @@ const AIGuideSection = () => {
     setResponse('Thinking...');
 
     try {
-      const res = await fetch('/park-assistant', {
+      const res = await fetch(`${API_BASE_URL}/park-assistant`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })

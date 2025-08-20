@@ -1,6 +1,17 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+// CORS configuration for separate frontend/backend deployment
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL || '*' // Set FRONTEND_URL in production
+    : ['http://localhost:3000', 'http://localhost:3001'], // Local development
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 const path = require('path');
 const OpenAI = require('openai');

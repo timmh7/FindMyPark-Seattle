@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import L from 'leaflet';
 import * as d3 from 'd3';
+import { API_BASE_URL } from '../config';
 
 // Fix for default markers in React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -83,7 +84,7 @@ const MapSection = () => {
 
   // Fetch Google Maps API key
   useEffect(() => {
-    fetch('/api/google-maps-key')
+    fetch(`${API_BASE_URL}/api/google-maps-key`)
       .then(res => res.json())
       .then(data => {
         if (data.key) {
