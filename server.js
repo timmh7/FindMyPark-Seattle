@@ -6,24 +6,21 @@ const path = require('path');
 const OpenAI = require('openai');
 const fs = require('fs/promises');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
-// Serve static files
-// Serve static files from the public folder
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the React build directory
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+} else {
+  // In development, serve the client's public folder for assets
+  app.use('/static', express.static(path.join(__dirname, 'client/public')));
+}
 
 // Endpoint to get Google Maps API key
 app.get('/api/google-maps-key', (req, res) => {
     res.json({ key: process.env.GOOGLE_MAPS_API_KEY });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
-// Fallback: serve index.html for root
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 // -----------------------------------------------------------------------------------------
 // OpenAI API Requests
 const OpenAIClient = new OpenAI({
@@ -100,7 +97,7 @@ app.post('/park-assistant', async (req, res) => {
     const filters = await parseQueryToFilters(query);
 
     // 2. Load parks database CSV and turn it into json objects
-    const csvText = await fs.readFile(path.join(__dirname, 'public', 'parks-features.csv'), 'utf8');
+    const csvText = await fs.readFile(path.join(__dirname, 'client', 'public', 'parks-features.csv'), 'utf8');
     const rows = csvText.split('\n');
     const headers = rows[0].split(',');
     const parks = rows.slice(1) // get rid of header row
@@ -182,4 +179,15 @@ app.post('/park-assistant', async (req, res) => {
     console.error(err);
     res.status(500).json({ response: "AI assistant failed." });
   }
+});
+
+// Catch all handler for React Router (production only)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build/index.html'));
+  });
+}
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
