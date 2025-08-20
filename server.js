@@ -22,9 +22,13 @@ const PORT = process.env.PORT || 5000;
 // Serve static files from the React build directory
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
+  // Serve images and other assets from the public folder in production
+  app.use('/img-assets', express.static(path.join(__dirname, 'client/public/img-assets')));
 } else {
   // In development, serve the client's public folder for assets
   app.use('/static', express.static(path.join(__dirname, 'client/public')));
+  // Also serve images directly in development for consistency
+  app.use('/img-assets', express.static(path.join(__dirname, 'client/public/img-assets')));
 }
 
 // Endpoint to get Google Maps API key

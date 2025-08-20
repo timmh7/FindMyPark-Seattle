@@ -445,7 +445,7 @@ const MapSection = () => {
           gap: '8px'
         }}>
           <img 
-            src="/static/img-assets/filter.png" 
+            src="/img-assets/filter.png" 
             alt="Filter icon" 
             style={{
               height: '1.2em',

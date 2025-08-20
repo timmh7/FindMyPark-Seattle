@@ -15,31 +15,31 @@ const IntroScreen = ({ onScrollToAI, onScrollToMap }) => {
     >
       {/* Decorative leaves/trees */}
       <img 
-        src="/static/img-assets/tree.png" 
+        src="/img-assets/tree.png" 
         className="intro-decor" 
         style={{ top: '8%', left: '6%' }} 
         alt="Leaf decor" 
       />
       <img 
-        src="/static/img-assets/leaf.png" 
+        src="/img-assets/leaf.png" 
         className="intro-decor" 
         style={{ top: '18%', right: '8%' }} 
         alt="Tree decor" 
       />
       <img 
-        src="/static/img-assets/leaf.png" 
+        src="/img-assets/leaf.png" 
         className="intro-decor" 
         style={{ bottom: '12%', left: '12%', transform: 'rotate(-18deg)' }} 
         alt="Leaf decor" 
       />
       <img 
-        src="/static/img-assets/tree.png" 
+        src="/img-assets/tree.png" 
         className="intro-decor" 
         style={{ bottom: '10%', right: '10%', transform: 'scale(0.9) rotate(8deg)' }} 
         alt="Tree decor" 
       />
       <img 
-        src="/static/img-assets/leaf.png" 
+        src="/img-assets/leaf.png" 
         className="intro-decor" 
         style={{ top: '56%', right: '26%' }} 
         alt="Tree decor" 
