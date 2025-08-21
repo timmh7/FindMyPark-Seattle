@@ -1,5 +1,5 @@
 Try it out here:
-https://seattleparksfinder.onrender.com/
+https://seattlegreenspaces.onrender.com
 
 This is a project I built to help people explore Seattle's incredible park system! With over 400 parks in the city, I wanted to create a tool that makes it easy to find the perfect outdoor space - whether you're looking for a dog-friendly spot, a place to hike, or just a local quiet park to relax.
 
